@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title></title>
+    <meta charset="utf-8" name = "viewport" content = "width=device-width, initial-scale=1.0">
+    <link rel = "stylesheet" href="css/registration_numbers.css">
+    <style>
+      .split{
+          height:100%;
+          width: 50%;
+          position: fixed;
+          z-index: 1;
+          top: 0;
+          overflow-x: hidden;
+          padding-top: 10px;
+          padding-right: 1px;
+          padding-left: 1px;
+        }
+      .left{
+        left: 0;
+      }
+      .right{
+        right: 0;
+      }
+    </style>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/handlebars.js/4.0.11/handlebars.min.js"></script>
+    <script src="js/registration_numbers.js"></script>
+    <script src='js/registration_number_templateDOM.js' charset="utf-8"></script>
+    <script type='text/x-template' class='regNumTemp'>
+      {{firstHeader 'Registration Numbers'}}
+    </script>
+    <script type='text/x-template' class='tipsPart'>
+      <p>Tips:
+          <ul>
+        {{#each towns}}<li>{{{town}}}</li>{{/each}}
+          </ul>
+      </p>
+    </script>
+    <script type='text/x-template' class='formsTemplate'>
+        <form>
+          {{inPut 'Registration Number: '}}
+        </form>
+    </script>
+    <script type='text/x-template' class='buttonsTemplate'>
+      {{#makeButtons "inputType"}}
+        add
+        reset
+      {{/makeButtons}}
+    </script>
+    <script type='text/x-template' class='filter'>
+      <form>
+        <p>Select Town</p>
+        <select id ="townList">
+          {{#makeFilter "filterSelected"}}
+            all
+            capetown
+            bellville
+            paarl
+            hermanus
+          {{/makeFilter}}
+        </select>
+      </form>
+    </script>
+    <script type='text/x-template' class='regDisplay'>
+      <ul>
+        {{#each registrationNumbers}}<li>{{this}}</li>{{/each}}
+      </ul>
+    </script>
+  </head>
+  <body>
+    <div class = 'split left'>
+      <div class = "header">
+        <h1>Registration Numbers</h1>
+      </div>
+      <div class="row">
+        <div class="appInstruction col-3">
+          <p>Tips:
+            <ul>
+              <li>Cape Town, the registration number starts with <span class="plates"><i>CA</i></span></li>
+              <li>Bellvile, the registration number starts with <span class="plates"><i>CY</i></span></li>
+              <li>Paarl, the registration number starts with <span class="plates"><i>CJ</i></span></li>
+              <li>Hermanus, the registration number starts with <span class="plates"><i>CEM</i></span></li>
+            </ul>
+          </p>
+        </div>
+        <div class = "col-8">
+          <form>
+            <p>
+              <span>Registration Number:<span>
+              <input type="text" name = "registration_number" class = "inPutSize regNum" placeholder="Enter vehicle number plate" maxlength="11" />
+            </p>
+          </form>
+          <div class ="" >
+            <button class="button-primary" on type="button" name="button" id ="addReg">Add </button>
+            <button class="button-primary" on type="button" name="button" id ="resetReg">Reset</button>
+          </div>
+        </div>
+      </div>
+      <div class=" row displayInstruction">
+        <span id ='plate'></span><span id = "footer"></span>
+      </div>
+      <div class = "row">
+        <form class="col-8 moveToRight " name ="formten">
+          <p>Select Town</p>
+          <select name="towns" id ="townBox" onchange="changeSelect();">
+            <option  value="all">All towns</option>
+            <option  value="capetown" >Cape Town</option>
+            <option  value="bellville" >Bellville</option>
+            <option  value="paarl">Paarl</option>
+            <option  value="hermanus">Hermanus</option>
+          </select>
+        </form>
+      </div>
+      <div class = "row">
+        <div class = "col-12 displayReg">
+          <ul class = "addHere">
+          </ul>
+        </div>
+      </div>
+    </div>
+    <div class = 'split right' >
+      <div class = "header" id = 'diplay-template'></div>
+      <div class="row">
+        <div class="appInstruction col-3" id = 'tips'></div>
+        <div class = "col-8" id = 'inputArea'></div>
+        <div id ='theButtonsDiv'></div>
+      </div>
+      <div class=" row displayInstruction">
+        <span id ='displayMessage'></span>
+      </div>
+      <div class = 'row col-8 moveToRight' id = 'filterPart' ></div>
+      <div class = "row">
+        <div class='col-12 displayReg' id = 'displayReg' ></div>
+      </div>
+    </div>
+  </body>
+  <script src="js/regstration_numbers-dom.js"></script>
+</html>

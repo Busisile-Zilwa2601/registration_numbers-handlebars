@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html>
+  <head>
+      <title></title>
+      <meta charset="utf-8" name = "viewport" content = "width=device-width, initial-scale=1.0">
+      <link rel = "stylesheet" href="css/registration_numbers.css">
+  </head>
+  <body onLoad = "changeSelect();">
+    <div class = "header">
+      <h1>Registration Numbers</h1>
+    </div>
+    <div class = "container">
+      <div class="row">
+        <div class="appInstruction col-3">
+          <p>Tips:
+            <ul>
+              <li>Cape Town, the registration number starts with <span class="plates"><i>CA</i></span></li>
+              <li>Bellvile, the registration number starts with <span class="plates"><i>CY</i></span></li>
+              <li>Paarl, the registration number starts with <span class="plates"><i>CJ</i></span></li>
+              <li>Hermanus, the registration number starts with <span class="plates"><i>CEM</i></span></li>
+            </ul>
+          </p>
+        </div>
+        <div class = "col-8">
+          <form>
+            <p>
+              <span>Registration Number:<span>
+                <input type="text" name = "registration_number" class = "inPutSize regNum" placeholder="Enter vehicle number plate" maxlength="11" />
+            </p>
+          </form>
+          <div class ="" >
+            <button class="button-primary" on type="button" name="button" id ="addReg">Add </button>
+            <button class="button-primary" on type="button" name="button" id ="reset">Reset</button>
+          </div>
+        </div>
+      </div>
+      <div class=" row displayInstruction">
+        <span id ='plate'></span><span id = "footer"></span>
+      </div>
+      <div class = "row">
+        <form class="col-8 moveToRight " name ="formten">
+          <p>Select Town</p>
+          <select name="towns" id ="townBox" onchange="changeSelect();">
+            <option  value="all">All towns</option>
+            <option  value="capetown" >Cape Town</option>
+            <option  value="bellville" >Bellville</option>
+            <option  value="paarl">Paarl</option>
+            <option  value="hermanus">Hermanus</option>
+          </select>
+        </form>
+      </div>
+    </div>
+    <div class = "row">
+      <div class = "col-8 displayReg">
+        <ul class = "addHere">
+        </ul>
+      </div>
+    </div>
+
+  </body>
+  <script src="js/registration_numbers.js"></script>
+  <script src="js/regstration_numbers-dom.js"></script>
+</html>
