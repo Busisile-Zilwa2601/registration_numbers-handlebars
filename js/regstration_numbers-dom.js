@@ -1,14 +1,22 @@
+//DOM variables
 var regNum = document.querySelector('.regNum');
 var list = document.querySelector('.addHere');
 var dropDown = document.getElementById('townBox');
 var message = document.getElementById('footer');
-var plate = document.getElementById('plate');
 
-var reg = RegistrationNumbers();
+//instance of the logic function
+
+
+//an empty object to refrence to localStorage
 var objReg = {};
+
+//check if the are elemnts on the local storage
 if(localStorage['registration_numbers']){
     objReg = JSON.parse(localStorage.getItem('registration_numbers'));
 }
+
+var reg = RegistrationNumbers(objReg);
+//function for the add button
 function addRegFunction(){
   var newElement = document.createElement('li');//create an empty <li> element
   regNumValue = regNum.value;//store the value of the user input
@@ -22,119 +30,28 @@ function addRegFunction(){
       objReg = reg.objtempReg;//create new object
     }
     var lastElem = reg.last(objReg);//store the last value added on the object
-    if(userSelection === 'capetown'){//check the user selection is cape town
-      if(reg.checkCape(lastElem)){//check the user input is cape town plates
+    if(userSelection === 'all'){//check the user selection is cape town
         newElement.innerHTML = lastElem;//change the li content to be the last value of the object
         list.appendChild(newElement);//place the li in the ul element, the list
         message.innerHTML = '';// change the content of the message to empty string.
-        plate.innerHTML = '';
-      }
-      /*Else check what the user starts with and place it that that city
-      */
-      else{
-        lastElem.trim();
-        var startString = (lastElem.substring(0,2)).toUpperCase();
-        if(startString === "CY"){
-          plate.innerHTML = lastElem;
-          message.innerHTML =' ,is added on Bellville list';
-        }
-        else if(startString === "CJ"){
-          plate.innerHTML = lastElem;
-          message.innerHTML =' ,is added on Paarl list';
-        }
-        else{
-          plate.innerHTML = lastElem;
-          message.innerHTML = ' ,is added on Hermanus list';
-        }
-      }
-    }
-    else if(userSelection === 'bellville'){//
-      if(reg.checkBell(lastElem)){
-        newElement.innerHTML = lastElem;
-        list.appendChild(newElement);
-        message.innerHTML = '';
-        plate.innerHTML = '';
-      }
-      /*Else check what the user starts with and place it that that city
-      */
-      else{
-        lastElem.trim();
-        var startString = (lastElem.substring(0,2)).toUpperCase();
-        if(startString === "CA"){
-          plate.innerHTML = lastElem;
-          message.innerHTML = ' , is added on Cape Town list';
-        }
-        else if(startString === "CJ"){
-          plate.innerHTML = lastElem;
-          message.innerHTML = ' , is added on Paarl list';
-        }
-        else{
-          plate.innerHTML = lastElem;
-          message.innerHTML = ' , is added on Hermanus list';
-        }
-      }
-    }
-    else if(userSelection === 'paarl'){
-      if(reg.checkPaarl(lastElem)){
-        newElement.innerHTML = lastElem;
-        list.appendChild(newElement);
-        message.innerHTML = '';
-        plate.innerHTML = '';
-      }
-      else{
-        lastElem.trim();
-        var startString = (lastElem.substring(0,2)).toUpperCase();
-        console.log(startString);
-        if(startString === "CY"){
-          plate.innerHTML = lastElem;
-          message.innerHTML = ' , is added on Bellville list';
-        }
-        else if(startString === "CA"){
-          plate.innerHTML = lastElem;
-          message.innerHTML = ' , is added on Cape Town list';
-        }
-        else{
-          plate.innerHTML = lastElem;
-          message.innerHTML = ' , is added on Hermanus list';
-        }
-      }
-    }
-    else if(userSelection === 'hermanus'){
-      if(reg.checkHer(lastElem)){
-        newElement.innerHTML = lastElem;
-        list.appendChild(newElement);
-        message.innerHTML = '';
-        plate.innerHTML = '';
-      }
-      else{
-        lastElem.trim();
-        var startString = (lastElem.substring(0,2)).toUpperCase();
-        if(startString === "CY"){
-          plate.innerHTML = lastElem;
-          message.innerHTML = ' , is added on Bellville list';
-        }
-        else if(startString === "CA"){
-          plate.innerHTML = lastElem;
-          message.innerHTML = ' , is added on Cape Town list';
-        }
-        else if(startString === "CJ"){
-          plate.innerHTML = lastElem;
-          message.innerHTML = ' , is added on Paarl list';
-        }
-      }
     }
     else{
-      newElement.innerHTML = lastElem;
-      list.appendChild(newElement);
-      message.innerHTML = '';
+      displayThis(regNumValue);// what is dsiplayed when a specific town is added.
     }
   }
   //The the user input is only digits or is not plate of the cities
+  else if(regNumValue === '' ){
+    message.innerHTML = 'Please enter a vehicle registration number';
+  }
+  else if(!reg.validate(regNumValue)){
+    message.innerHTML = "The correct vehicle registration number format is follows /'AB 111-111/' ";
+  }
   else{
-      if(reg.enter(regNumValue) === undefined)
-        message.innerHTML = " This input  " +regNumValue + " does not belong to any of the four towns. ";
-      if(!reg.validate(regNumValue)){
-        message.innerHTML = "The correct vehicle registration number format is follows /'AB 111-111/' ";
+    if(reg.enter(regNumValue) === undefined){
+          message.innerHTML = " This input  " +regNumValue.toUpperCase() + " does not belong to any of the four towns. ";
+    }
+    else if(!reg.enter(regNumValue)){
+        message.innerHTML = "The registration number is already added ";
       }
   }
   //remove the text on the input
@@ -147,59 +64,52 @@ function addRegFunction(){
 }
 var addRegBtn = document.getElementById('addReg');
 addRegBtn.addEventListener('click', addRegFunction);
-//This function is for printing the plates of the selected town
-function changeSelect(){
+
+//diplay
+function displayThis(town){
+  if(dropDown.options[dropDown.selectedIndex].value === reg.isFrom(town)){
+    printForThis(reg.isFrom(town));
+  }
+  else{
+    town = town.trim();
+    var whichTown = reg.isFrom(town);
+    if(whichTown === "bellville"){
+      message.innerHTML =town+ ' ,is added on Bellville list';
+    }
+    else if(whichTown === "capetown"){
+      message.innerHTML =town+ ' ,is added on Cape Town list';
+    }
+    else if(whichTown === "paarl"){
+      message.innerHTML =town+' ,is added on Paarl list';
+    }
+    else if(whichTown === "stellenbosch"){
+      message.innerHTML = town+' ,is added on Stellenbosch list';
+    }
+  }
+}
+//display all registartions numbers for selected town
+function printForThis(town){
   message.innerHTML = '';
-  plate.innerHTML = '';
-  console.log((list.children).length);
   while(list.hasChildNodes()){
       list.removeChild(list.firstChild);
   }
-  if(dropDown.options[dropDown.selectedIndex].value === 'capetown'){
-    if(reg.filter(objReg,'capetown').length !=0){
-      for(var i = 0; i < reg.filter(objReg,'capetown').length; i++){
+  if(dropDown.options[dropDown.selectedIndex].value === town){
+    if(reg.filter(town).length !=0){
+      for(var i = 0; i < reg.filter(town).length; i++){
         var newElement = document.createElement('li');
-        newElement.innerHTML = reg.filter(objReg,'capetown')[i];
+        newElement.innerHTML = reg.filter(town)[i];
         list.appendChild(newElement);
       }
     }
   }
-  else if(dropDown.options[dropDown.selectedIndex].value === 'bellville'){
-    if(reg.filter(objReg,'bellville').length != 0){
-      for(var i = 0; i < reg.filter(objReg,'bellville').length; i++){
-        var newElement = document.createElement('li');
-        newElement.innerHTML = reg.filter(objReg,'bellville')[i];
-        list.appendChild(newElement);
-      }
-    }
-  }
-  else if(dropDown.options[dropDown.selectedIndex].value === 'paarl'){
-    if(reg.filter(objReg,'paarl').length != 0){
-      for(var i = 0; i < reg.filter(objReg,'paarl').length; i++){
-        var newElement = document.createElement('li');
-        newElement.innerHTML = reg.filter(objReg,'paarl')[i];
-        list.appendChild(newElement);
-      }
-    }
-  }
-  else if(dropDown.options[dropDown.selectedIndex].value === 'hermanus'){
-    if(reg.filter(objReg,'hermanus').length != 0){
-      for(var i = 0; i < reg.filter(objReg,'hermanus').length; i++){
-        var newElement = document.createElement('li');
-        newElement.innerHTML = reg.filter(objReg,'hermanus')[i];
-        list.appendChild(newElement);
-      }
-    }
-  }
-  else{
-    if(reg.filter(objReg,'all') != 0){
-      for(var i = 0; i < reg.filter(objReg,'all').length; i++){
-        var newElement = document.createElement('li');
-        newElement.innerHTML = reg.filter(objReg,'all')[i];
-        list.appendChild(newElement);
-      }
-    }
-  }
+}
+//This function is for printing the plates of the selected town
+function changeSelect(){
+  if(dropDown.options[dropDown.selectedIndex].value === 'capetown'){printForThis('capetown'); message.innerHTML ='';}
+  else if(dropDown.options[dropDown.selectedIndex].value === 'bellville'){printForThis('bellville'); message.innerHTML ='';}
+  else if(dropDown.options[dropDown.selectedIndex].value === 'paarl'){printForThis('paarl'); message.innerHTML =''; }
+  else if(dropDown.options[dropDown.selectedIndex].value === 'stellenbosch'){printForThis('stellenbosch'); message.innerHTML =''; }
+  else if(dropDown.options[dropDown.selectedIndex].value === 'all'){printForThis('all'); message.innerHTML =''; }
 }
 function resetStorage(){
   if(localStorage['registration_numbers']){
@@ -210,21 +120,11 @@ function resetStorage(){
     while(list.hasChildNodes()){
         list.removeChild(list.firstChild);
     }
+    location.reload();
   }
 }
-function reLoad(){
-  location.reload();
-}
-console.log(document.getElementById('resetReg'));
 var resetBtn = document.getElementById('resetReg');
 resetBtn.addEventListener('click', resetStorage);
-resetBtn.addEventListener('click', reLoad);
 window.addEventListener('load', function(){
-  if(reg.filter(objReg,'all') != 0){
-    for(var i = 0; i < reg.filter(objReg,'all').length; i++){
-      var newElement = document.createElement('li');
-      newElement.innerHTML = reg.filter(objReg,'all')[i];
-      list.appendChild(newElement);
-    }
-  }
+  printForThis('all');
 });

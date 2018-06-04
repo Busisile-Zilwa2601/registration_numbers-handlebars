@@ -1,7 +1,7 @@
-function RegistrationNumbers(){
-  var temp = {};
+function RegistrationNumbers(stored){
+  var temp = stored || {};
   var takeReg = function(registration_number){
-    if(Number.isNaN(Number(registration_number)) && regValidate(registration_number) &&(isCapeTown(registration_number) || isBellville(registration_number) ||isPaarl(registration_number) || isHermanus(registration_number))){
+    if(Number.isNaN(Number(registration_number)) && regValidate(registration_number) &&(isCapeTown(registration_number) || isBellville(registration_number) ||isPaarl(registration_number) || isStellenbosch(registration_number))){
       if(temp[registration_number.toUpperCase()] === undefined){
         temp[registration_number.toUpperCase()] = 0;
       }
@@ -16,8 +16,10 @@ function RegistrationNumbers(){
   }
   //validate format
   var regValidate = function(registration_number){
-    var regex = /^[a-zA-Z]{2,3}(\s)[0-9]{3}(\-)[0-9]{3}$/
-    return regex.test(registration_number);
+    if(registration_number != ''){
+      var regex = /^[a-zA-Z]{2}(\s)[0-9]{3}(\-)[0-9]{3}$/
+      return regex.test(registration_number);
+    }
   }
   //check whether the registration number is from cape town
   var isCapeTown = function(registration_number){
@@ -31,16 +33,16 @@ function RegistrationNumbers(){
   var isPaarl = function(registration_number){
     return (registration_number.trim().toUpperCase()).startsWith('CJ');
   }
-  //check whether the registration number is from hermunas
-  var isHermanus = function(registration_number){
-    return (registration_number.trim().toUpperCase()).startsWith('CEM');
+  //check whether the registration number is from stellenbosch
+  var isStellenbosch = function(registration_number){
+    return (registration_number.trim().toUpperCase()).startsWith('CL');
   }
   //filter by town
-  var myFilter = function(temp,town){
+  var myFilter = function(town){
     var capetownArr = [];
     var bellvilleArr =[];
     var paarlArr = [];
-    var hermanusArr = [];
+    var stellenboschArr = [];
     var allArr = [];
     if(town === 'capetown'){
       for(var i = 0; i < sizeObj(temp); i++){
@@ -66,19 +68,25 @@ function RegistrationNumbers(){
       }
       return paarlArr;
     }
-    else if(town === "hermanus"){
+    else if(town === "stellenbosch"){
       for(var i = 0; i < sizeObj(temp); i++){
-        if(isHermanus(Object.keys(temp)[i])){
-          hermanusArr.push(Object.keys(temp)[i]);
+        if(isStellenbosch(Object.keys(temp)[i])){
+          stellenboschArr.push(Object.keys(temp)[i]);
         }
       }
-      return hermanusArr;
+      return stellenboschArr;
     }
     else if(town === 'all'){
       for(var key in temp)
         allArr.push(key.toUpperCase());
       }
       return allArr;
+  }
+  //check if it exist
+  var inTemp = function(temp, registration_number){
+    if(temp.hasOwnProperty((registration_number.toUpperCase()).trim() ) ){
+        return true;
+    }
   }
   //returns the size of the object
   var sizeObj = function(temp){
@@ -98,6 +106,7 @@ function RegistrationNumbers(){
   var returnFirst = function(temp){
     return Object.keys(temp)[0];
   }
+  //check which town is the registration number from
   var whichTown = function(registration_number){
     if(isCapeTown(registration_number)){
       return 'capetown';
@@ -108,8 +117,8 @@ function RegistrationNumbers(){
     else if(isPaarl(registration_number)){
       return 'paarl';
     }
-    else if(isHermanus(registration_number)){
-      return 'hermanus';
+    else if(isStellenbosch(registration_number)){
+      return 'stellenbosch';
     }
     else{
       return 'all';
@@ -121,12 +130,13 @@ function RegistrationNumbers(){
     checkCape : isCapeTown,
     checkBell : isBellville,
     checkPaarl : isPaarl,
-    checkHer : isHermanus,
+    checkStellenbosch : isStellenbosch,
     objtempReg : temp,
     isFrom : whichTown,
     size : sizeObj,
     last : returnLast,
     first : returnFirst,
     validate : regValidate,
+    alreadyAdded : inTemp,
   }
 }

@@ -1,5 +1,5 @@
 document.addEventListener('DOMContentLoaded', function(){
-  var myReg = RegistrationNumbers();
+
   var sourceHeader = document.querySelector('.regNumTemp').innerHTML;
   var template = Handlebars.compile(sourceHeader);
   Handlebars.registerHelper('firstHeader', function(text){
@@ -17,7 +17,7 @@ document.addEventListener('DOMContentLoaded', function(){
       {town : 'Cape Town, the registration number starts with <span class="plates"><i>CA</i></span>'},
       {town : 'Bellvile, the registration number starts with <span class="plates"><i>CY</i></span>'},
       {town : 'Paarl, the registration number starts with <span class="plates"><i>CJ</i></span>'},
-      {town : 'Hermanus, the registration number starts with <span class="plates"><i>CEM</i></span>'}
+      {town : 'Stellenbosch, the registration number starts with <span class="plates"><i>CL</i></span>'}
     ]
   });
   tips.innerHTML = dataTips;
@@ -70,9 +70,9 @@ document.addEventListener('DOMContentLoaded', function(){
   if(localStorage['registration_number']){
       objReg = JSON.parse(localStorage.getItem('registration_number'));
   }
+  var myReg = RegistrationNumbers(objReg);
   function addButton(){
     var regNumValue = inputArea.value;
-    console.log(regNumValue);
     if(myReg.enter(regNumValue)){
       if(myReg.size(objReg)>1 || localStorage['registration_number']){//check the size of the object and existance of localStorage
       objReg = Object.assign(objReg , myReg.objtempReg);//we increment the existing object and localStorage
@@ -80,6 +80,7 @@ document.addEventListener('DOMContentLoaded', function(){
       else{//empty object and no localStorage
         objReg = myReg.objtempReg;//create new object
       }
+      displayMessage.innerHTML = '';
       if(selectTown.options[selectTown.selectedIndex].value === 'all'){
         var regData = templateDisplay1({
           registrationNumbers: Object.keys(objReg)
@@ -90,6 +91,20 @@ document.addEventListener('DOMContentLoaded', function(){
       }
       localStorage['registration_number'] = JSON.stringify(objReg);
       objReg = JSON.parse(localStorage['registration_number']);
+    }
+    else if(regNumValue === '' ){
+      displayMessage.innerHTML = 'Please enter a vehicle registration number';
+    }
+    else if(!reg.validate(regNumValue)){
+      displayMessage.innerHTML = "The correct vehicle registration number format is follows /'AB 111-111/' ";
+    }
+    else{
+      if(reg.enter(regNumValue) === undefined){
+            displayMessage.innerHTML = " This input  " +regNumValue.toUpperCase() + " does not belong to any of the four towns. ";
+      }
+      else if(!reg.enter(regNumValue)){
+          displayMessage.innerHTML = "The registration number is already added ";
+        }
     }
     if(!inputArea.value || inputArea != inputArea.defaultValue){
       inputArea.value = inputArea.defaultValue;}
@@ -105,42 +120,42 @@ document.addEventListener('DOMContentLoaded', function(){
   //var sourceDisplayList = document.querySelector('.regDisplay').innerHTML;
   var selectTown = document.getElementById('townList');
   var templateDisplay1 = Handlebars.compile(sourceDisplayList);
+
   function byTown(town){
     displayReg.innerHTML = '';
     var regData = templateDisplay1({
-      registrationNumbers:myReg.filter(objReg, town)
+      registrationNumbers:myReg.filter(town)
     });
     displayReg.innerHTML = regData;
   }
+
   function displayThis(town){
     if(selectTown.options[selectTown.selectedIndex].value === myReg.isFrom(town)){
       byTown(myReg.isFrom(town));
     }
     else{
       town = town.trim();
-      var startString = ((town.substring(0,2)).toUpperCase()).trim();
-      if(startString === "CY"){
+      var whichTown = myReg.isFrom(town);
+      if(whichTown === "bellville"){
         displayMessage.innerHTML =town+ ' ,is added on Bellville list';
       }
-      else if(startString === "CA"){
+      else if(whichTown === "capetown"){
         displayMessage.innerHTML =town+ ' ,is added on Cape Town list';
       }
-      else if(startString === "CJ"){
+      else if(whichTown === "paarl"){
         displayMessage.innerHTML =town+' ,is added on Paarl list';
       }
-      else if(startString === "CEM"){
-        displayMessage.innerHTML = town+' ,is added on Hermanus list';
+      else if(whichTown === "stellenbosch"){
+        displayMessage.innerHTML = town+' ,is added on Stellenbosch list';
       }
     }
   }
+
   function changeSelected(){
-    if(selectTown.options[selectTown.selectedIndex].value === 'capetown'){
-      byTown('capetown');
-      displayMessage.innerHTML = '';
-    }
+    if(selectTown.options[selectTown.selectedIndex].value === 'capetown'){byTown('capetown');displayMessage.innerHTML = '';}
     else if(selectTown.options[selectTown.selectedIndex].value ==='bellville'){byTown('bellville'); displayMessage.innerHTML = '';}
     else if(selectTown.options[selectTown.selectedIndex].value === 'paarl'){byTown('paarl');displayMessage.innerHTML = '';}
-    else if(selectTown.options[selectTown.selectedIndex].value === 'hermanus'){byTown('hermanus');displayMessage.innerHTML = '';}
+    else if(selectTown.options[selectTown.selectedIndex].value === 'stellenbosch'){byTown('stellenbosch');displayMessage.innerHTML = '';}
     else if(selectTown.options[selectTown.selectedIndex].value === 'all'){byTown('all');displayMessage.innerHTML = '';}
   }
   selectTown.addEventListener('change', function(){
@@ -153,7 +168,6 @@ document.addEventListener('DOMContentLoaded', function(){
       location.reload();
     }
   }
-  console.log(document.getElementById('reset'));
   var reset = document.getElementById('reset');
   reset.addEventListener('click', clearStorage);
 });
